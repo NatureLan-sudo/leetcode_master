@@ -2,7 +2,7 @@
  * @Author: NatureLan-sudo lantianran282@163.com
  * @Date: 2023-02-22 11:45:30
  * @LastEditors: NatureLan-sudo lantianran282@163.com
- * @LastEditTime: 2023-02-25 16:42:36
+ * @LastEditTime: 2023-02-26 17:20:44
  * @FilePath: /leet/erchashu/review2.cpp
  * @brief: 
  * 
@@ -285,14 +285,6 @@ public:
     }
 };
 
-// 最大深度
-            que.push(RigtNode -> right);
-            que.push(LeftNode -> right);
-            que.push(RigtNode -> left);
-        }
-        return true;
-    }
-};
 
 // 最大深度
 // 二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
@@ -451,3 +443,245 @@ public:
         return result;
     }
 };
+
+// 左叶子之和.左树左叶子，右树右叶子
+// 递归
+class Solution {
+public:
+    int sumOfLeftLeaves(TreeNode* root) {
+        if (root == nullptr) return 0;
+        int left = 0;
+        if (root -> left != nullptr && root -> left -> left == nullptr && root -> left -> right == nullptr) {
+            left = root -> left -> val;
+        }
+        return left + sumOfLeftLeaves(root -> left) + sumOfLeftLeaves(root -> right);
+    }
+};
+//迭代
+class Solution {
+public:
+    int sumOfLeftLeaves(TreeNode* root) {
+        stack<TreeNode*> st;
+        if (root == nullptr) return 0;
+        int sum = 0;
+        st.push(root);
+        while (!st.empty()) {
+            TreeNode* node = st.top();
+            st.pop();
+            if (node -> left != nullptr && !node -> left -> left && !node -> left -> right) {
+                sum += node -> left -> val;
+            }
+            if (node -> left) st.push(node -> left);
+            if (node -> right) st.push(node -> right);
+        }
+        return sum;
+    }
+};
+
+// 树左下角的值
+// 给定一个二叉树的 根节点 root，请找出该二叉树的 最底层 最左边 节点的值。
+// 假设二叉树中至少有一个节点。
+// 迭代层序遍历
+class Solution {
+public:
+    int findBottomLeftValue(TreeNode* root) {
+        queue<TreeNode*> que;
+        que.push(root);
+        vector<int> res;
+        while (!que.empty()) {
+            res.clear();
+            int size = que.size();
+            while (size--) {
+                TreeNode* node = que.front();
+                res.push_back(node -> val);
+                que.pop();
+                if (node -> left) que.push(node -> left);
+                if (node -> right) que.push(node -> right);
+            }
+        }
+        return res[0];
+
+    }
+};
+//递归
+// 深度大，是左边的，并且是叶子节点
+class Solution {
+public:
+    int findBottomLeftValue(TreeNode* root) {
+
+    }
+};
+
+
+// 路径总和
+class Solution {
+public:
+    bool travel(TreeNode* cur, int count) {        
+        if (!cur -> left && !cur -> right && count == 0) return true;
+        if (!cur -> left && !cur -> right) return false;
+        if (cur -> left) {
+            count -= cur -> left -> val;
+            if (travel(cur -> left, count)) return true;
+            count += cur -> left -> val; // 撤销处理结果
+        } 
+        if (cur -> right) {
+            count -= cur -> right -> val;
+            if (travel(cur -> right, count)) return true;
+            count += cur -> right -> val;
+        }
+        return false;
+    }
+    bool hasPathSum(TreeNode* root, int targetSum) {
+        if (root == nullptr) return false;
+        return travel(root, targetSum - root -> val);
+    }
+};
+
+class Solution {
+public:
+    void haspath(TreeNode* node, bool& res, int target, int sum) {
+        // 以下过程只要有一次res变成true，就成了。因为程序里没有其他地方改变res的值
+        if (node == nullptr) return;
+        sum += node -> val; // 更新sum
+        if (node -> left == nullptr && node -> right == nullptr) { // 到叶子节点了
+            if (sum == target) {
+                res = true; 
+                return;
+            }
+        } // 如果存在 就不再执行。
+        if (!res) haspath(node -> left, res, target, sum);
+        if (!res) haspath(node -> right, res, target, sum);
+    }
+    bool hasPathSum(TreeNode* root, int targetSum) {
+        bool res = false;
+        int sum = 0;
+        haspath(root, res, targetSum, sum);
+        return res;
+    }
+};
+
+// 中后
+class Solution {
+private:
+    TreeNode* traversal (vector<int>& inorder, vector<int>& postorder) {
+        if (postorder.size() == 0) return NULL;
+
+        // 后序遍历数组最后一个元素，就是当前的中间节点
+        int rootValue = postorder[postorder.size() - 1];
+        TreeNode* root = new TreeNode(rootValue);
+
+        // 叶子节点
+        if (postorder.size() == 1) return root;
+
+        // 找到中序遍历的切割点
+        int delimiterIndex;
+        for (delimiterIndex = 0; delimiterIndex < inorder.size(); delimiterIndex++) {
+            if (inorder[delimiterIndex] == rootValue) break;
+        }
+
+        // 切割中序数组
+        // 左闭右开区间：[0, delimiterIndex)
+        vector<int> leftInorder(inorder.begin(), inorder.begin() + delimiterIndex);
+        // [delimiterIndex + 1, end)
+        vector<int> rightInorder(inorder.begin() + delimiterIndex + 1, inorder.end() );
+
+        // postorder 舍弃末尾元素
+        postorder.resize(postorder.size() - 1);
+
+        // 切割后序数组
+        // 依然左闭右开，注意这里使用了左中序数组大小作为切割点
+        // [0, leftInorder.size)
+        vector<int> leftPostorder(postorder.begin(), postorder.begin() + leftInorder.size());
+        // [leftInorder.size(), end)
+        vector<int> rightPostorder(postorder.begin() + leftInorder.size(), postorder.end());
+
+        root->left = traversal(leftInorder, leftPostorder);
+        root->right = traversal(rightInorder, rightPostorder);
+
+        return root;
+    }
+public:
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        if (inorder.size() == 0 || postorder.size() == 0) return NULL;
+        return traversal(inorder, postorder);
+    }
+};
+// 中后
+class Solution {
+private:
+    TreeNode* traversal (vector<int>& inorder, vector<int>& postorder) {
+        if (postorder.size() == 0) return nullptr;
+        // 后序最后一个元素
+        int cur = postorder[postorder.size() - 1];
+        TreeNode* node = new TreeNode(cur);
+        
+        // 如果是叶子节点，不用分割了
+        if (postorder.size() == 1) return node;
+
+        // 如果不是叶子节点，那么，下面还有其他元素，所以要根据这个元素找到中序的分割点
+        int fengedian = 0;
+        for (fengedian = 0; fengedian < inorder.size(); fengedian++) {
+            if (inorder[fengedian] == cur) break;
+        }
+
+        // 分割中序
+        // 左： [0, 分割点] 右：[分割点+1, end]
+        vector<int> left_inorder(inorder.begin(), inorder.begin() + fengedian);
+        vector<int> right_inorder(inorder.begin() + fengedian + 1, inorder.end());
+
+        // 后序舍去尾部
+        postorder.resize(postorder.size() - 1);
+        // 分割后序列
+        vector<int> left_postoder(postorder.begin(), postorder.begin() + left_inorder.size());
+        vector<int> right_postorder(postorder.begin() + left_inorder.size(), postorder.end());
+
+        node -> left = traversal(left_inorder, left_postoder);
+        node -> right = traversal(right_inorder, right_postorder);
+
+        return node;
+    }
+public:
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        if (inorder.size() == 0 || postorder.size() == 0) return nullptr;
+        return traversal(inorder, postorder);
+    }
+};
+
+// 中前
+class Solution {
+public:
+    TreeNode* traversal(vector<int>& preorder, vector<int>& inorder) {
+        // 用引用效率更高
+        if (preorder.size() == 0) return nullptr;
+
+        int cur = preorder[0];
+        TreeNode* cur_node = new TreeNode(cur);
+        
+        // 只有一个数说明是根节点，不用分割
+        if (preorder.size() == 1) return cur_node;
+
+        // 不是根节点，分割
+        int fengedian = 0;
+        for (fengedian = 0; fengedian < inorder.size(); fengedian++) {
+            if (inorder[fengedian] == cur) break;
+        }
+        
+        // 分割中序  左闭右开
+        vector<int> left_inorder(inorder.begin(), inorder.begin() + fengedian);
+        vector<int> right_inorder(inorder.begin() + fengedian + 1, inorder.end());
+
+        // 前序剔除头部元素  左闭右开
+        vector<int> left_preorder(preorder.begin() + 1, preorder.begin() + 1 + left_inorder.size());
+        vector<int> right_preorder(preorder.begin() + 1 + left_inorder.size(), preorder.end());
+
+        cur_node -> left = traversal(left_preorder, left_inorder);
+        cur_node -> right = traversal(right_preorder, right_inorder);
+        return cur_node;
+        
+    }
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        if (preorder.size() == 0 || inorder.size() == 0) return nullptr;
+        return traversal(preorder, inorder);
+    }
+};
+

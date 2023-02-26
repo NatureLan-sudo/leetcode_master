@@ -306,7 +306,73 @@ public:
         return res;
     }
 };
+// BM50 
+class Solution {
+public:
+    /**
+     * 
+     * @param numbers int整型vector 
+     * @param target int整型 
+     * @return int整型vector
+     */
+    vector<int> twoSum(vector<int>& numbers, int target) {
+        unordered_map<int, int> key;
+        for (int i = 0; i < numbers.size(); i++) {
+            if (key.find(target - numbers[i]) == key.end()) {
+                key.insert(make_pair(numbers[i], i));
+            } else {
+                int res = target - numbers[i];
+                return i < key[res] ? vector<int>{i + 1, key[res] + 1}: vector<int> {key[res] + 1, i + 1};
+            }
+        }
+        return {-1,-1};
+    }
+};
 
+// BM51 出现超过一半的数字
+class Solution {
+public:
+    int MoreThanHalfNum_Solution(vector<int> numbers) {
+        unordered_map<int, int> res;
+        int size = numbers.size() / 2;
+        if (numbers.size() == 1) return numbers[0];
+        for (auto i : numbers) {
+            if (res.find(i) != res.end()) {
+                res[i]++;
+                if (res[i] > size) return i;
+            } else {
+                res.insert(make_pair(i, 1));
+            }
+        }
+        return -1;
+    }
+};
+// 只出现一次的数字
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param array int整型vector 
+     * @return int整型vector
+     */
+    vector<int> FindNumsAppearOnce(vector<int>& array) {
+        unordered_map<int, int> res;
+        for (int i = 0; i < array.size(); i++) {
+            if (res.find(array[i]) != res.end()) res[array[i]]++;
+            else {
+                res.insert(make_pair(array[i], 1));
+            }
+        }
+        vector<int> result;
+        for (auto &iter : res) {
+            if (iter.second == 1) result.push_back(iter.first);
+        }
+        sort(result.begin(), result.end());
+        return result;
+    }
+};
 
 // BM88 
 class Solution {
