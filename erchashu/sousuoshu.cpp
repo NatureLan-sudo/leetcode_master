@@ -2,7 +2,7 @@
  * @Author: NatureLan-sudo lantianran282@163.com
  * @Date: 2023-02-27 20:14:09
  * @LastEditors: NatureLan-sudo lantianran282@163.com
- * @LastEditTime: 2023-02-27 22:32:19
+ * @LastEditTime: 2023-02-28 21:53:34
  * @FilePath: /leet/erchashu/sousuoshu.cpp
  * @brief: 
  * 
@@ -81,5 +81,36 @@ public:
                 min = abs(res[i] - res[i-1]);
         }
         return min;
+    }
+};
+// 众数，注意可能不止一个
+class Solution {
+public:
+    vector<int> res;
+    void zhongxu(TreeNode* node) {
+        if (node == nullptr) return;
+        zhongxu(node -> left);
+        res.push_back(node -> val);
+        zhongxu(node -> right);
+    }
+    vector<int> findMode(TreeNode* root) {
+        if (root == nullptr) return {};
+        zhongxu(root);
+        int max = 1;
+        int count = 1;
+        vector<int> result;
+        if (res.size() == 1) return res;
+        result.push_back(res[0]);
+        for (int i = 1; i < res.size(); i++) {
+            if (res[i] == res[i - 1]) {
+                count++;
+            } else count = 1;
+            if (count > max) {
+                max = count;
+                result.clear();
+                result.push_back(res[i]);
+            } else if (count == max)  result.push_back(res[i]);
+        }
+        return result;
     }
 };
