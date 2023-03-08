@@ -2,8 +2,8 @@
  * @Author: NatureLan-sudo lantianran282@163.com
  * @Date: 2022-10-10 10:58:18
  * @LastEditors: NatureLan-sudo lantianran282@163.com
- * @LastEditTime: 2023-02-22 14:09:06
- * @FilePath: /leet/common_include.h
+ * @LastEditTime: 2023-03-08 13:28:56
+ * @FilePath: /test/common_include.h
  * @brief: 
  * 
  * Copyright (c) 2022 by NatureLan-sudo lantianran282@163.com, All Rights Reserved. 
@@ -22,6 +22,7 @@
 #include <queue> // 单向队列
 #include <stack> // 栈
 #include <memory> //智能指针
+#include <string>
 using namespace std;
 
 struct TreeNode {
