@@ -2,7 +2,7 @@
  * @Author: NatureLan-sudo lantianran282@163.com
  * @Date: 2023-07-10 20:19:16
  * @LastEditors: NatureLan-sudo lantianran282@163.com
- * @LastEditTime: 2023-07-10 23:01:56
+ * @LastEditTime: 2023-07-11 21:40:36
  * @FilePath: /leetcode_master/gaopin/niukegaopin.cpp
  * @brief: 
  * 
@@ -523,5 +523,443 @@ public:
             head = head -> next;
         }
         return true;
+    }
+};
+
+//* BM14 链表奇数节点和偶数节点重排
+/**
+ * struct ListNode {
+ *	int val;
+ *	struct ListNode *next;
+ *	ListNode(int x) : val(x), next(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param head ListNode类 
+     * @return ListNode类
+     */
+    ListNode* oddEvenList(ListNode* head) {
+        // write code here
+        if (head == nullptr) return nullptr;
+        ListNode* jishu = head;
+        ListNode* oushu = head -> next;
+        ListNode* oushuhead = oushu;
+        // 偶数一定在奇数后面,所以判断偶数
+        while (oushu != nullptr && oushu -> next != nullptr) {
+            jishu -> next = oushu -> next;
+            jishu = jishu -> next;
+            oushu -> next = jishu -> next;
+            oushu = oushu -> next;
+        }
+        jishu -> next = oushuhead;
+        return head;
+    }
+};
+
+//*BM15  删除给出链表中的重复元素（链表中元素从小到大有序），使链表中的所有元素都只出现一次
+/**
+ * struct ListNode {
+ *	int val;
+ *	struct ListNode *next;
+ *	ListNode(int x) : val(x), next(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param head ListNode类 
+     * @return ListNode类
+     */
+    ListNode* deleteDuplicates(ListNode* head) {
+        // write code here
+        ListNode* prev = new ListNode(0);
+        prev -> next = head;
+        while (head != nullptr && head -> next != nullptr) {
+            if (head -> val == head -> next -> val) {
+                head -> next = head -> next -> next;
+            } else {
+                head = head -> next;
+            }
+        }
+        return prev -> next;
+    }
+};
+
+//*BM16 删除所有重复元素,也就是说,该元素只要重复就删掉
+/**
+ * struct ListNode {
+ *	int val;
+ *	struct ListNode *next;
+ *	ListNode(int x) : val(x), next(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param head ListNode类 
+     * @return ListNode类
+     */
+    ListNode* deleteDuplicates(ListNode* head) {
+        // write code here
+        ListNode* prev = new ListNode(0);
+        prev -> next = head;
+        ListNode* cur = head;
+        ListNode* prev_cur = prev;
+        while (cur != nullptr  && cur -> next != nullptr) {
+            if (cur -> val == cur -> next -> val) {
+                int tmp = cur -> val; // 这里要给定值,不然可能会出现相邻元素重复但不是同一个值.
+                while (cur != nullptr && cur -> next != nullptr &&  cur -> next -> val == tmp) {
+                    cur = cur -> next;
+                }
+                prev_cur -> next = cur -> next;
+                cur = cur -> next;
+            } else {
+                cur = cur -> next;
+                prev_cur = prev_cur -> next;
+            }
+        }
+        return prev -> next;
+    }
+};
+
+//* BM17 二分查找
+// 给定一个 元素升序的、无重复数字的整型数组 nums 和一个目标值 target ，写一个函数搜索 nums 中的 target，如果目标值存在返回下标（下标从 0 开始），否则返回 -1
+
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param nums int整型vector 
+     * @param target int整型 
+     * @return int整型
+     */
+    int search(vector<int>& nums, int target) {
+        // write code here
+        int left = 0;
+        int right = nums.size() - 1;
+        while (left <= right) {
+            int mid = (right - left) / 2 + left;
+            if (nums[mid] > target) {
+                right = mid - 1; // 记得要变
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+};
+
+//* BM18 二维数组查找
+// 在一个二维数组array中（每个一维数组的长度相同），每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
+// [
+// [1,2,8,9],
+// [2,4,9,12],
+// [4,7,10,13],
+// [6,8,11,15]
+// ]
+// 给定 target = 7，返回 true。
+// 给定 target = 3，返回 false。
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param target int整型 
+     * @param array int整型vector<vector<>> 
+     * @return bool布尔型
+     */
+    bool Find(int target, vector<vector<int> >& array) {
+        // write code here
+        if (array.empty()) return false;
+        for (auto i : array) {
+            if (i.empty()) continue;
+            if (target < i[0] || target > i[i.size() -1]) continue;
+            int left = 0;
+            int right = i.size() - 1;
+            while (left <= right) {
+                int mid = (right - left) / 2 + left;
+                if (i[mid] > target) {
+                    right = mid - 1;
+                } else if (i[mid] < target) {
+                    left = mid + 1;
+                } else {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
+
+//* BM19 
+// 给定一个长度为n的数组nums，请你找到峰值并返回其索引。数组可能包含多个峰值，在这种情况下，返回任何一个所在位置即可。
+// 1.峰值元素是指其值严格大于左右相邻值的元素。严格大于即不能有等于
+// 2.假设 nums[-1] = nums[n] = -\infty−∞
+// 3.对于所有有效的 i 都有 nums[i] != nums[i + 1]
+// 4.你可以使用O(logN)的时间复杂度实现此问题吗？
+// 说明不能顺序,这个复杂度得使用二分, 只要返回一个峰值就行,那么我们就保证
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param nums int整型vector 
+     * @return int整型
+     */
+    int findPeakElement(vector<int>& nums) {
+        // write code here
+        int left = 0;
+        int right = nums.size() - 1;
+        while (left < right) {
+            // 最后两个值相等的时候一定是波峰
+            int mid = (right - left) / 2 + left;
+            if (nums[mid]  > nums[mid + 1]) {
+                right = mid;   // 下降,右侧可能没有波峰,但是当前可能是波峰,所以不+1
+            } else { // 上升, 右侧可能存在波峰的区间,也说明当前mid肯定不是波峰,所以 要+1 
+                left = mid + 1; 
+            }
+        }
+        return right;
+    }
+};
+
+//* BM23 二叉树前序遍历
+// struct TreeNode {
+// int val;
+//     struct TreeNode *left;
+//  	struct TreeNode *right;
+//  	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+// };
+
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return int整型vector
+     */
+    // 中前后
+    void qianxu(TreeNode* node, vector<int>& res) {
+        if (node == nullptr) return;
+        res.push_back(node -> val);
+        qianxu(node -> left, res);
+        qianxu(node -> right, res);            
+    }
+    vector<int> preorderTraversal(TreeNode* root) {
+        // write code here
+        vector<int> res;
+        qianxu(root , res);
+        return res;
+    }
+};
+// 顺序遍历用栈
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return int整型vector
+     */
+    // 中前后
+    vector<int> preorderTraversal(TreeNode* root) {
+        // write code here
+        vector<int> res;
+        stack<TreeNode*> st;
+        if (root == nullptr)  return res;
+        st.push(root);
+        while (!st.empty()) {
+            TreeNode* node = st.top();
+            if (node != nullptr) {
+                st.pop(); // 栈,后进先出,按照中左右顺序.
+                if (node -> right) st.push(node -> right);
+                if (node -> left) st.push(node -> left);
+                st.push(node);
+                st.push(nullptr); // 标记已经使用过
+            } else {
+                st.pop();
+                TreeNode* node = st.top();
+                res.push_back(node -> val);
+                st.pop();
+            }
+        }
+        return res;
+    }
+};
+
+//* BM24 中序遍历
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return int整型vector
+     */
+    void zhongxu(TreeNode* node, vector<int>& res) {
+        if (node == nullptr) return;
+        zhongxu(node -> left, res);
+        res.push_back(node -> val);
+        zhongxu(node -> right, res);            
+    }
+    vector<int> inorderTraversal(TreeNode* root) {
+        // write code here
+        vector<int> res;
+        zhongxu(root, res);
+        return res;
+    }
+};
+
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return int整型vector
+     */
+    vector<int> inorderTraversal(TreeNode* root) {
+        // write code here
+        vector<int> res;
+        stack<TreeNode*> st;
+        if (root == nullptr)  return res;
+        st.push(root);
+        while (!st.empty()) {
+            TreeNode* node = st.top();
+            if (node != nullptr) {
+                st.pop(); // 栈,后进先出,按照中左右顺序.
+                if (node -> right) st.push(node -> right);
+                st.push(node);
+                st.push(nullptr); // 标记已经使用过
+                if (node -> left) st.push(node -> left);
+            } else {
+                st.pop();
+                TreeNode* node = st.top();
+                res.push_back(node -> val);
+                st.pop();
+            }
+        }
+        return res;
+    }
+};
+
+//* BM25 后序遍历
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return int整型vector
+     */
+    vector<int> postorderTraversal(TreeNode* root) {
+        // write code here
+        vector<int> res;
+        stack<TreeNode*> st;
+        if (root == nullptr)  return res;
+        st.push(root);
+        while (!st.empty()) {
+            TreeNode* node = st.top();
+            if (node != nullptr) {
+                st.pop(); // 栈,后进先出,按照中左右顺序.
+                st.push(node);
+                st.push(nullptr); // 标记已经使用过
+                if (node -> right) st.push(node -> right);
+                if (node -> left) st.push(node -> left);
+            } else {
+                st.pop();
+                TreeNode* node = st.top();
+                res.push_back(node -> val);
+                st.pop();
+            }
+        }
+        return res;
+    }
+};
+
+//*BM26 二叉树层序遍历
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return int整型vector<vector<>>
+     */
+    vector<vector<int> > levelOrder(TreeNode* root) {
+        // write code here
+        queue<TreeNode*> que;
+        vector<vector<int>> res;
+        if (root == nullptr) return res;
+        que.push(root);
+        while (!que.empty()) {
+            int size = que.size();
+            vector<int> vec;
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                vec.push_back(node -> val);
+                if (node -> left) que.push(node -> left);
+                if (node -> right) que.push(node -> right);
+                que.pop();
+            }
+            res.push_back(vec);
+        }
+        return res;
     }
 };
