@@ -2,7 +2,7 @@
  * @Author: NatureLan-sudo lantianran282@163.com
  * @Date: 2023-07-10 20:19:16
  * @LastEditors: NatureLan-sudo lantianran282@163.com
- * @LastEditTime: 2023-07-11 21:40:36
+ * @LastEditTime: 2023-07-15 20:05:20
  * @FilePath: /leetcode_master/gaopin/niukegaopin.cpp
  * @brief: 
  * 
@@ -961,5 +961,465 @@ public:
             res.push_back(vec);
         }
         return res;
+    }
+};
+
+//* BM 27 之字形打印
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param pRoot TreeNode类 
+     * @return int整型vector<vector<>>
+     */
+    vector<vector<int> > Print(TreeNode* pRoot) {
+        // write code here
+        queue<TreeNode*> que;
+        vector<vector<int>> res;
+        if (pRoot == nullptr) return res;
+        que.push(pRoot);
+        int i = 0;
+        while (!que.empty()) {
+            i++;
+            int size = que.size();
+            vector<int> vec;
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (node -> left) que.push(node -> left);
+                if (node -> right) que.push(node -> right);
+                vec.push_back(node -> val);
+            }
+            if (i % 2 == 0) {
+                reverse(vec.begin(), vec.end());
+            }
+            res.push_back(vec);
+        }
+        return res;
+    }
+};
+
+//* BM28 二叉树的最大深度
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+// 求给定二叉树的最大深度，
+// 深度是指树的根节点到任一叶子节点路径上节点的数量。
+// 最大深度是所有叶子节点的深度的最大值。
+// （注：叶子节点是指没有子节点的节点。）
+// 最笨的方法，层序遍历记录层数
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return int整型
+     */
+    int maxDepth(TreeNode* root) {
+        // write code here
+        queue<TreeNode*> que;
+        if (root == nullptr) return 0;
+        que.push(root);
+        int i = 0;
+        while (!que.empty()) {
+            i++;
+            int size = que.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (node -> left) que.push(node -> left);
+                if (node -> right) que.push(node -> right);
+            }
+        }
+        return i;
+    }
+};
+//- 采用递归的方法
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return int整型
+     */
+    int getd(TreeNode* node) {
+        if (node == nullptr) return 0;
+        int d = 1;
+        d += max(getd(node -> left), getd(node -> right));
+        return d;
+    }
+    int maxDepth(TreeNode* root) {
+        // write code here
+        return getd(root);
+    }
+};
+
+//* BM29 
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+
+// 给定一个二叉树root和一个值 sum ，判断是否有从根节点到叶子节点的节点值之和等于 sum 的路径。
+// 1.该题路径定义为从树的根结点开始往下一直到叶子结点所经过的结点
+// 2.叶子节点是指没有子节点的节点
+// 3.路径只能从父节点到子节点，不能从子节点到父节点
+// 4.总节点数目为n
+
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @param sum int整型 
+     * @return bool布尔型
+     */
+    // 测试数据里面由负数，所以不能大于就返回，同时需要注意sum，不能是引用。
+    void getsum(TreeNode* node, int target, bool &res, int sum) {
+        if (node == nullptr) return;
+        sum += node -> val; 
+        if (sum == target) {
+            if(!node -> left && !node ->right){
+                // 保证到了叶子节点
+                res = true;
+                return;
+            }
+        }
+        getsum(node -> left, target, res, sum);
+        getsum(node -> right, target, res, sum);
+    }
+    bool hasPathSum(TreeNode* root, int sum) {
+        // write code here
+        int target = sum;
+        int numsum = 0;
+        bool res = false;
+        getsum(root, target, res, numsum);
+        return res;
+    }
+};
+
+
+//! BM30  二叉搜索树与双向链表
+// 重点关注一下引用
+/*
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};*/
+class Solution {
+public:
+    TreeNode* Convert(TreeNode* pRootOfTree) {
+        if (pRootOfTree  == nullptr) return nullptr;
+        TreeNode* prev = nullptr;
+        Converthelper(pRootOfTree, prev);
+        while (prev -> left) { // 从后往前获取头节点
+            prev = prev -> left;
+        }
+        return prev;
+    }
+    void Converthelper(TreeNode* cur , TreeNode*& prev) {
+        if (cur == nullptr) return;
+        Converthelper(cur -> left, prev);
+
+        cur -> left = prev;
+        if (prev) prev -> right = cur;
+        prev = cur;
+
+        Converthelper(cur -> right, prev);
+    }
+};
+
+
+//* BM31对称的二叉树
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+// 给定一棵二叉树，判断其是否是自身的镜像（即：是否对称）
+
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param pRoot TreeNode类 
+     * @return bool布尔型
+     */
+    bool Symmetrical(TreeNode* leftnode, TreeNode* rightnode) {
+        if (!leftnode && ! rightnode) return true;
+        if (leftnode && !rightnode) return false;
+        if (!leftnode && rightnode) return false;
+        // 两个节点都存在
+        if (leftnode -> val != rightnode -> val) return false;
+        // 两个节点还相等。
+        bool res = Symmetrical(leftnode -> left, rightnode -> right) && Symmetrical(leftnode -> right, rightnode -> left);
+        return res;
+
+    }
+    bool isSymmetrical(TreeNode* pRoot) {
+        // write code here
+        if (pRoot == nullptr) return true;
+        return Symmetrical(pRoot -> left, pRoot -> right);
+    }
+};
+
+//*BM32 合并二叉树
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ * };
+ */
+
+class Solution {
+public:
+    TreeNode* mergeTrees(TreeNode* t1, TreeNode* t2) {
+        if (!t1) return t2;
+        if (!t2) return t1;
+        TreeNode* head = new TreeNode(t1 -> val + t2 -> val);
+        head -> left = mergeTrees(t1 -> left, t2 -> left);
+        head -> right = mergeTrees(t1 -> right, t2 -> right);
+        return head;
+    }
+};
+
+
+//* BM33 二叉树镜像
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+// 镜像的节点交换
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param pRoot TreeNode类 
+     * @return TreeNode类
+     */
+    TreeNode* Mirror(TreeNode* pRoot) {
+        // write code here
+        if (pRoot == nullptr) return nullptr;
+        swap(pRoot -> left, pRoot -> right);
+        Mirror(pRoot -> left);
+        Mirror(pRoot -> right);
+        return pRoot;
+    }
+};
+
+//* BM34 判断是不是二叉搜索树
+/**
+ * struct TreeNode {
+ *	int val;
+ *	struct TreeNode *left;
+ *	struct TreeNode *right;
+ *	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ * };
+ */
+// 中序遍历，判断是不是按从大到小排列。
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return bool布尔型
+     */
+    void zhongxu(TreeNode* node, vector<int>& res) {
+        if (node == nullptr) return;
+        zhongxu(node -> left, res);
+        res.push_back(node -> val);
+        zhongxu(node -> right, res);
+    }
+    bool isValidBST(TreeNode* root) {
+        // write code here
+        vector<int> tree;
+        zhongxu(root, tree);
+        for (int i = 0; i < tree.size(); i++) {
+            if (i == 0) continue;
+            if (tree[i] <= tree[i - 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+//! BM35   判断是不是完全二叉树
+// 因为是层序遍历，对于每一层来说，所以如果已经有过空节点，那么就不能再有空节点了。
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param root TreeNode类 
+     * @return bool布尔型
+     */
+    bool isCompleteTree(TreeNode* root) {
+        // write code here
+        queue<TreeNode*> que;
+        if (root == nullptr) return true;
+        que.push(root);
+        bool flag = false;
+        while (!que.empty()) {
+            int size = que.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (node == nullptr) {
+                    flag = true;
+                } else {
+                    if (flag) return false;
+                    que.push(node -> left);
+                    que.push(node -> right);
+                }
+            }
+        }
+        return true;
+    }
+};
+
+//! BM36 判断是不是平衡二叉树
+// 自底向上
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param pRoot TreeNode类 
+     * @return bool布尔型
+     */
+    int getdepth(TreeNode* node) {
+        if (node == nullptr) return 0;
+        int leftdepth = getdepth(node -> left);
+        if (leftdepth == -1) return -1;
+        int rightdepth = getdepth(node -> right);
+        if (rightdepth == -1) return -1;
+        if (abs(leftdepth - rightdepth)  > 1) return -1;
+        return max(leftdepth, rightdepth) + 1;
+    }
+    bool IsBalanced_Solution(TreeNode* pRoot) {
+        // write code here
+        if (pRoot == nullptr) return true;
+        int depth = getdepth(pRoot);
+        if (depth == -1) return false;
+        return true;
+    }
+};
+
+//* BM42 两个栈实现一个队列
+class Solution
+{
+public:
+    void push(int node) {
+        stack1.push(node);  // 栈，先进后出
+    }
+
+    int pop() {
+        if (stack2.empty()) {
+            while(!stack1.empty()) {
+                int i = stack1.top();
+                stack2.push(i);
+                stack1.pop();
+            }
+        }
+        int res = stack2.top();
+        stack2.pop();
+        return res;
+    }
+
+private:
+    stack<int> stack1;
+    stack<int> stack2;
+};
+
+//* BM43
+//* BM44 
+//* BM62
+class Solution {
+public:
+    int Fibonacci(int n) {
+            if (n <= 1) return n;
+            vector<int> dp(n + 1);
+            dp[0] = 0;
+            dp[1] = 1;
+            for(int i = 2; i <= n; i++) {
+                dp[i] = dp[i  - 1] + dp[i - 2];
+            }
+            return dp[n];
+    }
+};
+
+//* BM63 跳台阶
+class Solution {
+public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param number int整型 
+     * @return int整型
+     */
+    int jumpFloor(int number) {
+        // write code here
+        vector<int> dp(number + 1);
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i <=number; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[number];
     }
 };
